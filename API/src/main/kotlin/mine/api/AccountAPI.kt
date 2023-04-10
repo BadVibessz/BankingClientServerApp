@@ -21,26 +21,68 @@ object AccountAPI {
         val service = "account-service"
         val requestCommand = "create-command"
 
-//        val requestContent = object {
-//            val bankAccountName = name
-//            val bankAccountType = accountType
-//        }
-
         val requestContent = mutableMapOf<String, Any>()
-        requestContent["bankAccountName"] = name
-        requestContent["bankAccountType"] = accountType
-
-
+        requestContent["name"] = name
+        requestContent["type"] = accountType
 
         val request = Request(service, requestCommand, requestContent)
-        //val json = Json.encodeToString(request)
-        // json = jacksonObjectMapper().writeValueAsString(request)
+
+        val json = Gson().toJson(request)
+        communicator.send(json)
+    }
+
+    fun update(accountName: String, newName: String, communicator: Communicator) {
+        val service = "account-service"
+        val requestCommand = "update-command"
+
+        val requestContent = mutableMapOf<String, Any>()
+        requestContent["name"] = accountName
+        requestContent["newName"] = newName
+
+        val request = Request(service, requestCommand, requestContent)
 
         val json = Gson().toJson(request)
         communicator.send(json)
 
     }
 
-    // todo: delete, update
+    fun delete(accountName: String, communicator: Communicator) {
+        val service = "account-service"
+        val requestCommand = "delete-command"
+
+        val requestContent = mutableMapOf<String, Any>()
+        requestContent["name"] = accountName
+
+        val request = Request(service, requestCommand, requestContent)
+
+        val json = Gson().toJson(request)
+        communicator.send(json)
+    }
+
+    fun get(accountName: String, communicator: Communicator) {
+        val service = "account-service"
+        val requestCommand = "get-command"
+
+        val requestContent = mutableMapOf<String, Any>()
+        requestContent["name"] = accountName
+
+        val request = Request(service, requestCommand, requestContent)
+
+        val json = Gson().toJson(request)
+        communicator.send(json)
+    }
+
+    fun getAll(communicator: Communicator) {
+        val service = "account-service"
+        val requestCommand = "get-all-command"
+
+        val requestContent = mutableMapOf<String, Any>()
+
+        val request = Request(service, requestCommand, requestContent)
+
+        val json = Gson().toJson(request)
+        communicator.send(json)
+    }
+
 
 }

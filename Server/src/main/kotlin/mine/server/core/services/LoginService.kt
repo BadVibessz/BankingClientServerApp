@@ -1,11 +1,10 @@
 package mine.server.core.services
 
-import mine.server.models.BankClient
+import mine.server.entities.BankClient
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class LoginService {
 
-    fun login(email: String, password: String): BankClient? {
-
-        TODO("fetch from bd bankClient with this email and pass and then return it")
-    }
+    fun login(email: String, password: String): BankClient? =
+        transaction { BankClient.all().find { it.email == email && it.password == password } }
 }

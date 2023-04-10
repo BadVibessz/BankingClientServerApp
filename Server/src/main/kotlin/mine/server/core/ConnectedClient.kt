@@ -3,7 +3,7 @@ package mine.server.core
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import mine.Communicator
-import mine.server.models.BankClient
+import mine.server.entities.BankClient
 import java.net.Socket
 
 class ConnectedClient(private val socket: Socket) { // todo: private socket???

@@ -2,8 +2,12 @@ package mine.client
 
 import kotlinx.coroutines.*
 import mine.Communicator
+import mine.api.AccountAPI
+import mine.api.CardAPI
 import mine.api.LoginAPI
 import mine.api.RegisterAPI
+import mine.types.AccountType
+import mine.types.CardType
 import java.net.Socket
 
 class Client(
@@ -31,11 +35,21 @@ class Client(
                 //val input = readlnOrNull() ?: ""
 
                 //if (input == "createacc")
-                // TODO: TROUBLES WITH COROUTINES
                 //AccountAPI.create("newAcc", AccountType.Checking, _communicator)
 
-                //LoginAPI.login("email@mail.com", "pass", _communicator)
-                RegisterAPI.register("email@mail.com", "pass", _communicator)
+                //RegisterAPI.register("email@mail.com", "pass", _communicator)
+
+                LoginAPI.login("email@mail.com", "pass", _communicator)
+                AccountAPI.create("newAcc", AccountType.Checking, _communicator)
+                CardAPI.create("myNewDebitCard", CardType.Debit, "newAcc", _communicator)
+
+                AccountAPI.delete("newAcc", _communicator)
+
+
+                //AccountAPI.update("myCheckingAccount", "myAccount", _communicator)
+
+
+                //RegisterAPI.register("email@mail.com", "pass", _communicator)
 
             }
         }

@@ -3,6 +3,7 @@ package mine.api
 import com.google.gson.Gson
 import mine.Communicator
 import mine.requests.Request
+import mine.utils.Hasher
 
 
 object LoginAPI {
@@ -14,7 +15,7 @@ object LoginAPI {
 
         val requestContent = mutableMapOf<String, Any>()
         requestContent["email"] = email
-        requestContent["password"] = password
+        requestContent["password"] = Hasher.hashString(password, "SHA-256", Charsets.UTF_8)
 
 
         val request = Request(service, requestCommand, requestContent)
