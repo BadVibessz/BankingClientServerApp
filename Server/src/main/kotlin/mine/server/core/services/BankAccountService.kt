@@ -11,7 +11,7 @@ class BankAccountService { // todo: implement as Scoped https://metanit.com/shar
 
     // todo: get, getall, create, update, delete
 
-    fun create(name: String, type: AccountType, client: BankClient) {
+    fun create(name: String, type: AccountType, client: BankClient): Boolean {
 
         var success = true
         transaction {
@@ -30,11 +30,13 @@ class BankAccountService { // todo: implement as Scoped https://metanit.com/shar
             }
         }
 
+        return success
+
         // todo: badRequest if success == false, Ok else
 
     }
 
-    fun get(name: String) = transaction { BankAccount.all().find { it.name == name } }
+    fun get(id: Int) = transaction { BankAccount.all().find { it.id.value == id} }
     fun getAll() = transaction { BankAccount.all().toList() }
 
     fun update(account: BankAccount, newName: String) = transaction {

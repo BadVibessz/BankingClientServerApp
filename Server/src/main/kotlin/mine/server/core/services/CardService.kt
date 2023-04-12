@@ -6,6 +6,7 @@ import mine.server.entities.Card
 import mine.types.CardType
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
+import java.lang.Exception
 
 class CardService {
 
@@ -39,6 +40,30 @@ class CardService {
         }
 
         // todo: badRequest if success == false, Ok else
+    }
+
+    fun update(newName: String, card: Card) = transaction {
+        BankAccounts.update {
+            card.name = newName
+        }
+    }
+
+    fun get(id: Int) = transaction { Card.all().find { it.id.value == id } }
+    fun getAll() = transaction { Card.all().toList() }
+
+    fun delete(card: Card) = transaction {
+
+        val cardBalance = card.balance
+
+        // todo: handle better
+        val account = BankAccountService().get(card.account.value)  ?: throw Exception("wtf?")
+
+        card.delete()
+
+        val newBalance = account.balance - cardBalance
+        BankAccounts.update({ BankAccounts.name eq account.name }) {
+            it[balance] = newBalance
+        }
 
     }
 

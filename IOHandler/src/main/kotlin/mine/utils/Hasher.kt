@@ -6,6 +6,10 @@ import java.security.MessageDigest
 
 object Hasher {
 
+
+    // todo: use bcrypt/scrypt or PBDKF2
+    //  https://security.stackexchange.com/questions/16354/whats-the-advantage-of-using-pbkdf2-vs-sha256-to-generate-an-aes-encryption-key
+
     fun hashString(input: String, algorithm: String, encoding: Charset): String {
 
         val bytes = MessageDigest

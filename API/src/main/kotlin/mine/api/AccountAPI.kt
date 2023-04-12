@@ -31,12 +31,12 @@ object AccountAPI {
         communicator.send(json)
     }
 
-    fun update(accountName: String, newName: String, communicator: Communicator) {
+    fun update(id: Int, newName: String, communicator: Communicator) {
         val service = "account-service"
         val requestCommand = "update-command"
 
         val requestContent = mutableMapOf<String, Any>()
-        requestContent["name"] = accountName
+        requestContent["id"] = id
         requestContent["newName"] = newName
 
         val request = Request(service, requestCommand, requestContent)
@@ -46,12 +46,12 @@ object AccountAPI {
 
     }
 
-    fun delete(accountName: String, communicator: Communicator) {
+    fun delete(id: Int, communicator: Communicator) {
         val service = "account-service"
         val requestCommand = "delete-command"
 
         val requestContent = mutableMapOf<String, Any>()
-        requestContent["name"] = accountName
+        requestContent["id"] = id
 
         val request = Request(service, requestCommand, requestContent)
 
@@ -59,12 +59,12 @@ object AccountAPI {
         communicator.send(json)
     }
 
-    fun get(accountName: String, communicator: Communicator) {
+    fun get(id: Int, communicator: Communicator) {
         val service = "account-service"
         val requestCommand = "get-command"
 
         val requestContent = mutableMapOf<String, Any>()
-        requestContent["name"] = accountName
+        requestContent["id"] = id
 
         val request = Request(service, requestCommand, requestContent)
 

@@ -5,12 +5,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class RegisterService {
 
-    fun register(email: String, password: String) {
-
+    fun register(email: String, password: String): Boolean {
 
         // todo: return response
         var success = true
-
 
         transaction {
 
@@ -19,13 +17,13 @@ class RegisterService {
                 close()
             }
 
-
-            val newCleint = BankClient.new {
+            BankClient.new {
                 this.email = email
                 this.password = password
             }
+
         }
 
-        // todo: badRequest if success == false, Ok else
+        return success
     }
 }

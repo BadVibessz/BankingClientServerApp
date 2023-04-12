@@ -26,7 +26,7 @@ class Client(
     fun start() = _mainCoroutineScope.launch {
         launch {
             _communicator.startReceiving {
-                parse(it)
+                ServerResponseHandler.handleRespone(it)
             }
         }
 
@@ -37,13 +37,17 @@ class Client(
                 //if (input == "createacc")
                 //AccountAPI.create("newAcc", AccountType.Checking, _communicator)
 
-                //RegisterAPI.register("email@mail.com", "pass", _communicator)
+                //RegisterAPI.register("test@gmail.com", "test", _communicator)
 
                 LoginAPI.login("email@mail.com", "pass", _communicator)
-                AccountAPI.create("newAcc", AccountType.Checking, _communicator)
-                CardAPI.create("myNewDebitCard", CardType.Debit, "newAcc", _communicator)
+                //AccountAPI.create("newAcc", AccountType.Checking, _communicator)
+                //CardAPI.create("myNewDebitCard", CardType.Debit, "newAcc", _communicator)
 
-                AccountAPI.delete("newAcc", _communicator)
+                //AccountAPI.delete("newAcc", _communicator)
+
+                //CardAPI.update(4,"xdd",_communicator)
+
+               //AccountAPI.delete(1,_communicator)
 
 
                 //AccountAPI.update("myCheckingAccount", "myAccount", _communicator)
@@ -55,33 +59,4 @@ class Client(
         }
     }
 
-    private fun parse(data: String) {
-        data.split(":", limit = 2).let {
-            when (it[0]) {
-                "INTR" -> {
-                    print("Представьте себя: ")
-                }
-
-                "REINTR" -> {
-                    print("Имя занято, выберите другое: ")
-                }
-
-                "NAMEOK" -> {
-                    println("Вы успешно вошли в чат")
-                }
-
-                "MSG" -> {
-                    println(it[1])
-                }
-
-                "NEW" -> {
-                    println("Пользователь ${it[1]} вошёл в чат")
-                }
-
-                "EXIT" -> {
-                    println("Пользователь ${it[1]} покинул чат")
-                }
-            }
-        }
-    }
 }
