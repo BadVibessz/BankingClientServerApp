@@ -35,6 +35,15 @@ object ClientHandler {
                 val service = RegisterService()
 
                 when (request.command) {
+
+                    "generate-salt-and-challenge-command" ->
+                    {
+                        val salt = service.generateSalt(8) // 2^n ?
+                        val challenge = service.generateSalt(5)
+
+
+                    }
+
                     "register-command" -> {
 
                         val content = request.content!!

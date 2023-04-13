@@ -8,9 +8,10 @@ import kotlin.text.Charsets.UTF_8
 
 object RegisterAPI {
 
+    var salt: String? = null
+    var serverChallenge: String? = null
 
     // todo: is it safe to hash on client?
-
 
     fun register(email: String, password: String, communicator: Communicator) {
 
@@ -19,19 +20,31 @@ object RegisterAPI {
         // todo: use bcrypt/scrypt or PBDKF2
         //  https://security.stackexchange.com/questions/16354/whats-the-advantage-of-using-pbkdf2-vs-sha256-to-generate-an-aes-encryption-key
 
+        //TODO: in new coroutine?
+
+        var service = "register-service"
+        var requestCommand = "generate-salt-and-challenge-command"
+
+        var request = Request(service, requestCommand, null)
+
+        var json = Gson().toJson(request)
+        communicator.send(json)
+
+        // todo: wait for response with salt to be received
+
         val hashedPassword = Hasher.hashString(password, "SHA-256", UTF_8)
 
-        val service = "register-service"
-        val requestCommand = "register-command"
+        service = "register-service"
+        requestCommand = "register-command"
 
         val requestContent = mutableMapOf<String, Any>()
         requestContent["email"] = email
         requestContent["password"] = hashedPassword
 
 
-        val request = Request(service, requestCommand, requestContent)
+        request = Request(service, requestCommand, requestContent)
 
-        val json = Gson().toJson(request)
+        json = Gson().toJson(request)
         communicator.send(json)
 
     }
