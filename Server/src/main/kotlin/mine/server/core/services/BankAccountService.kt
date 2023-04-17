@@ -14,20 +14,24 @@ class BankAccountService { // todo: implement as Scoped https://metanit.com/shar
     fun create(name: String, type: AccountType, client: BankClient): Boolean {
 
         var success = true
-        transaction {
+        try {
+            transaction {
 
-            if (BankAccount.all().find { it.name == name } != null) {
-                success = false
-                close()
-            } // todo: badRequest
+                if (BankAccount.all().find { it.name == name } != null) {
+                    success = false
+                    close()
+                } // todo: badRequest
 
 
-            BankAccount.new {
-                this.name = name
-                this.type = type
-                this.client = client.id
-                this.balance = 0F // todo: ??
+                BankAccount.new {
+                    this.name = name
+                    this.type = type
+                    this.client = client.id
+                    this.balance = 0F // todo: ??
+                }
             }
+        } catch (_: Exception) {
+            success = false
         }
 
         return success
@@ -36,7 +40,7 @@ class BankAccountService { // todo: implement as Scoped https://metanit.com/shar
 
     }
 
-    fun get(id: Int) = transaction { BankAccount.all().find { it.id.value == id} }
+    fun get(id: Int) = transaction { BankAccount.all().find { it.id.value == id } }
     fun getAll() = transaction { BankAccount.all().toList() }
 
     fun update(account: BankAccount, newName: String) = transaction {

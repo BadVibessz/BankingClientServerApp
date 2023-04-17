@@ -6,6 +6,7 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.ReferenceOption
+import java.io.Serializable
 
 
 object Cards : IntIdTable() {
@@ -25,3 +26,4 @@ class Card(id: EntityID<Int>) : IntEntity(id) {
     var type by Cards.type
     var balance by Cards.balance
 }
+

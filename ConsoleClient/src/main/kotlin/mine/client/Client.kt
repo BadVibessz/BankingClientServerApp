@@ -34,12 +34,33 @@ class Client(
             while (isActive) {
                 //val input = readlnOrNull() ?: ""
 
+
+//                if (input.contains("register")) {
+//                    val spltd = input.split(' ')
+//                    RegisterAPI.register(spltd[1], spltd[2], _communicator)
+//
+//                }
+//
+//                if (input.contains("login")) {
+//                    val spltd = input.split(' ')
+//                    LoginAPI.login(spltd[1], spltd[2], _communicator)
+//                }
+
+                // todo: implement type enum as constants and move type enum to server app
+
+                LoginAPI.login("test@gmail.com", "test", _communicator)
+                //AccountAPI.create("myAccount", AccountType.Checking, _communicator)
+                //CardAPI.create("myDebitCard",CardType.Debit,3,_communicator)
+                //CardAPI.get(6,_communicator)
+                AccountAPI.getAll(_communicator)
+
+
                 //if (input == "createacc")
                 //AccountAPI.create("newAcc", AccountType.Checking, _communicator)
 
                 //RegisterAPI.register("test@gmail.com", "test", _communicator)
 
-                LoginAPI.login("email@mail.com", "pass", _communicator)
+                //LoginAPI.login("email@mail.com", "pass", _communicator)
                 //AccountAPI.create("newAcc", AccountType.Checking, _communicator)
                 //CardAPI.create("myNewDebitCard", CardType.Debit, "newAcc", _communicator)
 
@@ -47,7 +68,7 @@ class Client(
 
                 //CardAPI.update(4,"xdd",_communicator)
 
-               //AccountAPI.delete(1,_communicator)
+                //AccountAPI.delete(1,_communicator)
 
 
                 //AccountAPI.update("myCheckingAccount", "myAccount", _communicator)

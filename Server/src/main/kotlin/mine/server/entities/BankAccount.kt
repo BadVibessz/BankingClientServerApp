@@ -7,6 +7,7 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.ReferenceOption
+import java.io.Serializable
 
 
 object BankAccounts : IntIdTable() {
@@ -28,3 +29,4 @@ class BankAccount(id: EntityID<Int>) : IntEntity(id) {
     val cards by Card referrersOn Cards.account
 
 }
+

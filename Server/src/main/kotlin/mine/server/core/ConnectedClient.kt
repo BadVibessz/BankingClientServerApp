@@ -25,7 +25,7 @@ class ConnectedClient(private val socket: Socket) { // todo: private socket???
     suspend fun start() = coroutineScope {
         launch {
             try {
-                _communicator.startReceiving { json -> ClientHandler.handleRequest(json, this@ConnectedClient, _communicator) }
+                _communicator.startReceiving { json -> ClientRequestHandler.handleRequest(json, this@ConnectedClient, _communicator) }
             } catch (_: Throwable) {
                 // todo: handle
             }
