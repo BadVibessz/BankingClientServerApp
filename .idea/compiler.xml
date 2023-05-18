@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="IOHandler" />
         <module name="API" />
+        <module name="GUIClient" />
         <module name="Server" />
         <module name="ConsoleClient" />
       </profile>

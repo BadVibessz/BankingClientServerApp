@@ -8,5 +8,6 @@ enum class StatusCode(val code: Int, val description: String) {
     Forbidden(403, "todo"),
     NotFound(404, "todo"),
 
+
     Unknown(0, "Unknown error")
 }

@@ -8,7 +8,7 @@ import mine.utils.Hasher
 
 object LoginAPI {
 
-    fun login(email: String, password: String, communicator: Communicator) {
+    fun login(email: String, password: String, callback: (String) -> Unit) {
 
         val service = "login-service"
         val requestCommand = "login-command"
@@ -17,11 +17,12 @@ object LoginAPI {
         requestContent["email"] = email
         requestContent["password"] = Hasher.hashString(password, "SHA-256", Charsets.UTF_8)
 
+        // todo: use rsa + aes
 
         val request = Request(service, requestCommand, requestContent)
 
         val json = Gson().toJson(request)
-        communicator.send(json)
+        callback(json)
     }
 
 

@@ -1,12 +1,14 @@
-package mine.client
+package mine.client.gui.core
 
 import com.google.gson.Gson
-import mine.cryptography.asymmetric.RSA
+import mine.api.AccountAPI
+import mine.client.gui.windows.MainWindow
 import mine.responses.Response
 import mine.serializable.BankAccountSerializable
 import mine.serializable.CardSerializable
+import mine.statuses.StatusCode
+import mine.types.AccountType
 import mine.types.ResponseType
-import java.security.PublicKey
 
 object ServerResponseHandler {
 
@@ -20,17 +22,55 @@ object ServerResponseHandler {
         val content = response.content
         val request = response.request
 
-        when (response.type) {
 
-            ResponseType.RSAPublicKey -> {
+        when (status) {
+            StatusCode.OK -> {
 
+                when (request.command) {
+                    "login-command" -> {
+                        client.loginWindow!!.dispose()
+                        client.loginWindow = null
+                        client.mainWindow = MainWindow(client).apply { isVisible = true }
 
-                val bytes = (content!!["bytes"] as ArrayList<Int>)
-                    .map { it.toByte() }.toByteArray()
+                        //AccountAPI.create("MyAccount", AccountType.Checking, client.communicator)
 
-                client.rsaPublicKey = RSA.getPublicKeyFromByteArray(bytes)
+                        //AccountAPI.getAll(client.communicator)
+
+                    }
+
+                    "register-command" -> {
+                        client.registerWindow!!.showMessageBox(message)
+                    }
+
+                    else -> {
+                        // todo
+
+                    }
+                }
+
             }
 
+            StatusCode.BadRequest -> {
+
+                when (request.command) {
+                    "register-command" -> {
+                        client.registerWindow!!.showMessageBox(message)
+                    }
+
+                    "login-command" -> {
+                        client.loginWindow!!.showMessageBox(message)
+                    }
+                }
+
+            }
+
+            else -> {
+                // todo
+
+            }
+        }
+
+        when (response.type) {
             ResponseType.SingleAccount -> {
                 val account = _gson.fromJson(
                     content!!["account"].toString(),
@@ -41,12 +81,18 @@ object ServerResponseHandler {
             }
 
             ResponseType.AccountList -> {
+
+                val z = content!!["accounts"].toString().trim()
+
                 val accounts = _gson.fromJson(
-                    content!!["accounts"].toString(),
+                    content!!["accounts"].toString().trim(),
                     Array<BankAccountSerializable>::class.java
                 ).toList()
 
                 // todo: update client's account list
+
+                client.mainWindow!!.updateThumbnails(accounts)
+
             }
 
             ResponseType.SingleCard -> {

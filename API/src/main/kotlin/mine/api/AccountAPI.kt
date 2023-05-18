@@ -14,7 +14,8 @@ object AccountAPI {
 
     //private val _gson =
 
-    fun create(name: String, accountType: AccountType, communicator: Communicator) {
+    // TODO: DO NOT CREATE ACCOUNTS WITH WHITESPACES IN NAME
+    fun create(name: String, accountType: AccountType, callback: (String) -> Unit) {
 
         // todo: form request and send it on server using communicator
 
@@ -28,10 +29,10 @@ object AccountAPI {
         val request = Request(service, requestCommand, requestContent)
 
         val json = Gson().toJson(request)
-        communicator.send(json)
+        callback(json)
     }
 
-    fun update(id: Int, newName: String, communicator: Communicator) {
+    fun update(id: Int, newName: String, callback: (String) -> Unit) {
         val service = "account-service"
         val requestCommand = "update-command"
 
@@ -42,11 +43,11 @@ object AccountAPI {
         val request = Request(service, requestCommand, requestContent)
 
         val json = Gson().toJson(request)
-        communicator.send(json)
+        callback(json)
 
     }
 
-    fun delete(id: Int, communicator: Communicator) {
+    fun delete(id: Int, callback: (String) -> Unit) {
         val service = "account-service"
         val requestCommand = "delete-command"
 
@@ -56,10 +57,10 @@ object AccountAPI {
         val request = Request(service, requestCommand, requestContent)
 
         val json = Gson().toJson(request)
-        communicator.send(json)
+        callback(json)
     }
 
-    fun get(id: Int, communicator: Communicator) {
+    fun get(id: Int, callback: (String) -> Unit) {
         val service = "account-service"
         val requestCommand = "get-command"
 
@@ -69,10 +70,10 @@ object AccountAPI {
         val request = Request(service, requestCommand, requestContent)
 
         val json = Gson().toJson(request)
-        communicator.send(json)
+        callback(json)
     }
 
-    fun getAll(communicator: Communicator) {
+    fun getAll(callback: (String) -> Unit) {
         val service = "account-service"
         val requestCommand = "get-all-command"
 
@@ -81,7 +82,7 @@ object AccountAPI {
         val request = Request(service, requestCommand, requestContent)
 
         val json = Gson().toJson(request)
-        communicator.send(json)
+        callback(json)
     }
 
 

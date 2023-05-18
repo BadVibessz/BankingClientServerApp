@@ -1,14 +1,14 @@
 package mine.client
 
+import com.google.gson.Gson
 import kotlinx.coroutines.*
 import mine.Communicator
-import mine.api.AccountAPI
-import mine.api.CardAPI
-import mine.api.LoginAPI
-import mine.api.RegisterAPI
+import mine.api.*
+import mine.cryptography.symmetric.AES
 import mine.types.AccountType
 import mine.types.CardType
 import java.net.Socket
+import java.security.PublicKey
 
 class Client(
     host: String,
@@ -18,6 +18,9 @@ class Client(
     private val _communicator: Communicator
     private val _mainCoroutineScope = CoroutineScope(Dispatchers.IO + Job())
 
+    var rsaPublicKey: PublicKey? = null
+    private val _aesSecretKey = AES.generateSecretKey()
+
     init {
         _socket = Socket(host, port)
         _communicator = Communicator(_socket)
@@ -26,58 +29,45 @@ class Client(
     fun start() = _mainCoroutineScope.launch {
         launch {
             _communicator.startReceiving {
-                ServerResponseHandler.handleRespone(it)
+                ServerResponseHandler.handleRespone(it, this@Client)
             }
         }
 
         launch {
-            while (isActive) {
-                //val input = readlnOrNull() ?: ""
+            if (isActive) {
 
-
-//                if (input.contains("register")) {
-//                    val spltd = input.split(' ')
-//                    RegisterAPI.register(spltd[1], spltd[2], _communicator)
-//
-//                }
-//
-//                if (input.contains("login")) {
-//                    val spltd = input.split(' ')
-//                    LoginAPI.login(spltd[1], spltd[2], _communicator)
-//                }
 
                 // todo: implement type enum as constants and move type enum to server app
 
-                LoginAPI.login("test@gmail.com", "test", _communicator)
-                //AccountAPI.create("myAccount", AccountType.Checking, _communicator)
-                //CardAPI.create("myDebitCard",CardType.Debit,3,_communicator)
-                //CardAPI.get(6,_communicator)
-                AccountAPI.getAll(_communicator)
+                CryptoAPI.getRSAPublicKey(_communicator)
 
+                LoginAPI.login("test@gmail.com", "test", this@Client::send)
 
-                //if (input == "createacc")
-                //AccountAPI.create("newAcc", AccountType.Checking, _communicator)
+                //AccountAPI.getAll(this@Client::send)
 
-                //RegisterAPI.register("test@gmail.com", "test", _communicator)
-
-                //LoginAPI.login("email@mail.com", "pass", _communicator)
-                //AccountAPI.create("newAcc", AccountType.Checking, _communicator)
-                //CardAPI.create("myNewDebitCard", CardType.Debit, "newAcc", _communicator)
-
-                //AccountAPI.delete("newAcc", _communicator)
-
-                //CardAPI.update(4,"xdd",_communicator)
-
-                //AccountAPI.delete(1,_communicator)
-
-
-                //AccountAPI.update("myCheckingAccount", "myAccount", _communicator)
-
-
-                //RegisterAPI.register("email@mail.com", "pass", _communicator)
 
             }
         }
     }
+
+    private fun send(msg: String) {
+
+        val (encrypted: ByteArray, iv: ByteArray) =
+            AES.encrypt(msg.toByteArray(Charsets.US_ASCII), _aesSecretKey)
+
+        val (a: Int, b: Int, c: Int) = Triple(1, 3, 2)
+
+        val message = Triple(encrypted, iv, _aesSecretKey.encoded)
+
+        val str = Gson().toJson(message)
+
+        val bytes = Gson().fromJson(str, Triple::class.java)
+
+        val decrypted = AES.decrypt(encrypted, _aesSecretKey, iv).toString(Charsets.US_ASCII)
+
+        // todo: send via socket data as byteArray and encrypted aes secret keys
+        _communicator.send(encrypted.toString(Charsets.US_ASCII))
+    }
+
 
 }

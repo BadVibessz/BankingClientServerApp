@@ -5,6 +5,8 @@
     <file url="file://$PROJECT_DIR$/API/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ConsoleClient/src/main/kotlin" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ConsoleClient/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/GUIClient/src/main/kotlin" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/GUIClient/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/IOHandler/src/main/kotlin" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/IOHandler/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Server/src/main/kotlin" charset="UTF-8" />

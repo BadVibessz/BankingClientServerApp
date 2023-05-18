@@ -59,6 +59,27 @@ object ClientRequestHandler {
 
         when (request.service) {
 
+            "crypto-service" -> {
+
+                // todo: say to client what encoding server uses
+
+                val stringPublicKey = client.getRSAPublicKey()
+                    .encoded.toString(Charsets.UTF_8)
+
+                val content = mutableMapOf<String, Any>()
+                content["bytes"] = client.getRSAPublicKey().encoded
+
+                val response = Response(
+                    StatusCode.OK,
+                    "Here's your RSA public key",
+                    content,
+                    request,
+                    ResponseType.RSAPublicKey
+                )
+
+                communicator.send(_gson.toJson(response))
+            }
+
             "register-service" -> {
                 val service = RegisterService()
 
@@ -109,7 +130,7 @@ object ClientRequestHandler {
                             message = "You have successfully logged in!"
 
                         } else {
-                            status = StatusCode.NotFound
+                            status = StatusCode.BadRequest
                             message = "Wrong email or password"
                         }
 

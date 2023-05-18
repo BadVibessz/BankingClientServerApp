@@ -17,10 +17,10 @@ class BankAccountService { // todo: implement as Scoped https://metanit.com/shar
         try {
             transaction {
 
-                if (BankAccount.all().find { it.name == name } != null) {
-                    success = false
-                    close()
-                } // todo: badRequest
+//                if (BankAccount.all().find { it.name == name } != null) {
+//                    success = false
+//                    close()
+//                } // todo: badRequest
 
 
                 BankAccount.new {
@@ -30,7 +30,7 @@ class BankAccountService { // todo: implement as Scoped https://metanit.com/shar
                     this.balance = 0F // todo: ??
                 }
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
             success = false
         }
 

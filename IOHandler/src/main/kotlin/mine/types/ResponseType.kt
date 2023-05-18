@@ -1,9 +1,10 @@
 package mine.types
 
 enum class ResponseType {
-    SingleCard, // одна карта
-    CardList, // список карт
-    SingleAccount, // один счет
-    AccountList, // список счетов
+    RSAPublicKey,
+    SingleCard,
+    CardList,
+    SingleAccount,
+    AccountList,
     NoContent, // ничего не возвращает
 }

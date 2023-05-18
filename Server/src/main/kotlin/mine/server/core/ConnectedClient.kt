@@ -3,12 +3,17 @@ package mine.server.core
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import mine.Communicator
+import mine.cryptography.asymmetric.RSA
 import mine.server.entities.BankClient
 import java.net.Socket
 
 class ConnectedClient(private val socket: Socket) { // todo: private socket???
 
     private val _communicator = Communicator(socket) // todo: protected/private?
+    private val _rsaKeyPair = RSA.generateKeyPair()
+
+    fun getRSAPublicKey() = _rsaKeyPair.public
+
 
     var name: String? = null
     var password: String? = null // todo: hash
