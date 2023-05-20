@@ -3,7 +3,6 @@ package mine.client.gui.windows
 import mine.api.LoginAPI
 import mine.client.gui.core.Client
 import mine.client.gui.windows.abstractions.MyWindow
-import mine.utils.Hasher
 import java.awt.Dimension
 import javax.swing.*
 import javax.swing.JOptionPane.showMessageDialog

@@ -1,14 +1,9 @@
 package mine.api
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.gson.Gson
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import mine.Communicator
 import mine.requests.Request
-import mine.statuses.StatusCode
 import mine.types.AccountType
-import java.util.concurrent.CancellationException
+import kotlin.reflect.KSuspendFunction1
 
 object AccountAPI {
 
@@ -73,7 +68,7 @@ object AccountAPI {
         callback(json)
     }
 
-    fun getAll(callback: (String) -> Unit) {
+    suspend fun getAll(callback: KSuspendFunction1<String, Unit>) {
         val service = "account-service"
         val requestCommand = "get-all-command"
 

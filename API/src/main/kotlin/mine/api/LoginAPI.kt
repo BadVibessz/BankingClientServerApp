@@ -1,14 +1,14 @@
 package mine.api
 
 import com.google.gson.Gson
-import mine.Communicator
 import mine.requests.Request
 import mine.utils.Hasher
+import kotlin.reflect.KSuspendFunction1
 
 
 object LoginAPI {
 
-    fun login(email: String, password: String, callback: (String) -> Unit) {
+    suspend fun login(email: String, password: String, callback: KSuspendFunction1<String, Unit>) {
 
         val service = "login-service"
         val requestCommand = "login-command"

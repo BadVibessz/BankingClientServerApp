@@ -1,6 +1,7 @@
 package mine.server.core
 
 import com.google.gson.Gson
+import com.google.gson.stream.JsonReader
 import mine.Communicator
 import mine.requests.Request
 import mine.responses.Response
@@ -47,7 +48,7 @@ object ClientRequestHandler {
     }
 
 
-    fun handleRequest(json: String, client: ConnectedClient, communicator: Communicator) {
+    suspend fun handleRequest(json: String, client: ConnectedClient, communicator: Communicator) {
 
         /*todo:
         *  1) prevent code duplication
@@ -55,6 +56,7 @@ object ClientRequestHandler {
         */
 
 
+        //JsonReader().isLenient = true;
         val request = _gson.fromJson(json, Request::class.java)
 
         when (request.service) {

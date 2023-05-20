@@ -45,7 +45,7 @@ class Client(
         }
     }
 
-    fun send(msg: String) {
+    suspend fun send(msg: String) {
 
         // todo: use cipher
 

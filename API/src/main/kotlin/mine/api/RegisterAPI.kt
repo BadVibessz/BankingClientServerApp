@@ -12,7 +12,7 @@ object RegisterAPI {
     // todo: is it safe to hash on client?
 
 
-    fun register(email: String, password: String, communicator: Communicator) {
+    suspend fun register(email: String, password: String, communicator: Communicator) {
 
         // todo: https://habr.com/ru/articles/594071/
 

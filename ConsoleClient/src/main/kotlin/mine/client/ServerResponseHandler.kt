@@ -23,12 +23,11 @@ object ServerResponseHandler {
         when (response.type) {
 
             ResponseType.RSAPublicKey -> {
-
-
                 val bytes = (content!!["bytes"] as ArrayList<Int>)
                     .map { it.toByte() }.toByteArray()
 
-                client.rsaPublicKey = RSA.getPublicKeyFromByteArray(bytes)
+                // todo:
+                //client.rsaPublicKey = RSA.getPublicKeyFromByteArray(bytes)
             }
 
             ResponseType.SingleAccount -> {
@@ -72,7 +71,8 @@ object ServerResponseHandler {
             }
         }
 
-        println(message)
+        client.ui?.showMessage(message);
+        //println(message)
     }
 
 }

@@ -7,7 +7,7 @@ import mine.requests.Request
 object CryptoAPI {
 
 
-    fun getRSAPublicKey(communicator: Communicator) {
+    suspend fun getRSAPublicKey(communicator: Communicator) {
 
         val service = "crypto-service"
         val requestCommand = "get-rsa-public-key"

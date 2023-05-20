@@ -7,25 +7,37 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.net.Socket
+import java.nio.ByteBuffer
+import java.nio.channels.AsynchronousServerSocketChannel
+import java.nio.channels.AsynchronousSocketChannel
+import kotlin.coroutines.suspendCoroutine
 
-class Communicator(val socket: Socket) { // todo: object?
+class Communicator(val socket: AsynchronousSocketChannel) { // todo: object?
 
-    suspend fun startReceiving(parseRule: (String) -> Unit) {
-        val br = BufferedReader(InputStreamReader(socket.getInputStream()))
+    suspend fun startReceiving(parseCallback: (String) -> Unit) {
 
-        coroutineScope {
-            while (isActive) {
-                val data = br.readLine()
-                parseRule(data)
-            }
+        val buf = ByteBuffer.allocate(1024)
+
+        suspendCoroutine {
+            socket.read(buf, it, AsyncHandler())
         }
+
+        buf.flip()
+        val ba = ByteArray(buf.limit())
+        buf.get(ba)
+
+        parseCallback(ba.toString(Charsets.UTF_8))
     }
 
-    fun send(data: String) {
-        val pw = PrintWriter(socket.getOutputStream())
+    suspend fun send(data: String) {
 
-        pw.println(data)
-        pw.flush()
+        val buf = ByteBuffer.allocate(1024)
+        buf.put(data.toByteArray(Charsets.UTF_8))
+        buf.flip()
+
+        suspendCoroutine {
+            socket.write(buf, it, AsyncHandler())
+        }
     }
 
 }

@@ -9,7 +9,7 @@ object CardAPI {
 
     // todo: create, delete, update, transfer(money), deposit, withdraw
 
-    fun create(name: String, type: CardType, accountId: Int, communicator: Communicator)
+    suspend fun create(name: String, type: CardType, accountId: Int, communicator: Communicator)
     {
         val service = "card-service"
         val requestCommand = "create-command"
@@ -26,7 +26,7 @@ object CardAPI {
         communicator.send(json)
     }
 
-    fun update(id: Int, newName: String, communicator: Communicator) {
+    suspend fun update(id: Int, newName: String, communicator: Communicator) {
 
         val service = "card-service"
         val requestCommand = "update-command"
@@ -42,7 +42,7 @@ object CardAPI {
 
     }
 
-    fun delete(id: Int, communicator: Communicator) {
+    suspend fun delete(id: Int, communicator: Communicator) {
         val service = "card-service"
         val requestCommand = "delete-command"
 
@@ -55,7 +55,7 @@ object CardAPI {
         communicator.send(json)
     }
 
-    fun get(id: Int, communicator: Communicator) {
+    suspend fun get(id: Int, communicator: Communicator) {
         val service = "card-service"
         val requestCommand = "get-command"
 
@@ -68,7 +68,7 @@ object CardAPI {
         communicator.send(json)
     }
 
-    fun getAll(communicator: Communicator) {
+    suspend fun getAll(communicator: Communicator) {
         val service = "card-service"
         val requestCommand = "get-all-command"
 
