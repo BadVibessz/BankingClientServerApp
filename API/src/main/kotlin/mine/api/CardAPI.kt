@@ -2,31 +2,29 @@ package mine.api
 
 import com.google.gson.Gson
 import mine.Communicator
+import mine.models.CardModel
 import mine.requests.Request
 import mine.types.CardType
 
 object CardAPI {
 
-    // todo: create, delete, update, transfer(money), deposit, withdraw
-
-    fun create(name: String, type: CardType, accountId: Int, communicator: Communicator)
+    fun create(model: CardModel, accountId: Int, callback: (String) -> Unit)
     {
         val service = "card-service"
         val requestCommand = "create-command"
 
         val requestContent = mutableMapOf<String, Any>()
-        requestContent["name"] = name
-        requestContent["type"] = type
+        requestContent["name"] = model.name
+        requestContent["type"] = model.type
         requestContent["accountId"] = accountId
-
 
         val request = Request(service, requestCommand, requestContent)
 
         val json = Gson().toJson(request)
-        communicator.send(json)
+        callback(json)
     }
 
-    fun update(id: Int, newName: String, communicator: Communicator) {
+    fun update(id: Int, newName: String, callback: (String) -> Unit) {
 
         val service = "card-service"
         val requestCommand = "update-command"
@@ -38,11 +36,10 @@ object CardAPI {
         val request = Request(service, requestCommand, requestContent)
 
         val json = Gson().toJson(request)
-        communicator.send(json)
-
+        callback(json)
     }
 
-    fun delete(id: Int, communicator: Communicator) {
+    fun delete(id: Int, callback: (String) -> Unit) {
         val service = "card-service"
         val requestCommand = "delete-command"
 
@@ -52,10 +49,10 @@ object CardAPI {
         val request = Request(service, requestCommand, requestContent)
 
         val json = Gson().toJson(request)
-        communicator.send(json)
+        callback(json)
     }
 
-    fun get(id: Int, communicator: Communicator) {
+    fun get(id: Int, callback: (String) -> Unit) {
         val service = "card-service"
         val requestCommand = "get-command"
 
@@ -65,10 +62,10 @@ object CardAPI {
         val request = Request(service, requestCommand, requestContent)
 
         val json = Gson().toJson(request)
-        communicator.send(json)
+        callback(json)
     }
 
-    fun getAll(communicator: Communicator) {
+    fun getAll(callback: (String) -> Unit) {
         val service = "card-service"
         val requestCommand = "get-all-command"
 
@@ -77,7 +74,7 @@ object CardAPI {
         val request = Request(service, requestCommand, requestContent)
 
         val json = Gson().toJson(request)
-        communicator.send(json)
+        callback(json)
     }
 
 }

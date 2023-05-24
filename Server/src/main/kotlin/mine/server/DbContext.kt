@@ -1,9 +1,6 @@
 package mine.server
 
-import mine.server.entities.BankAccount
-import mine.server.entities.BankAccounts
-import mine.server.entities.BankClients
-import mine.server.entities.Cards
+import mine.server.entities.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -23,7 +20,7 @@ class DbContext {
         transaction(connection) {
 
             // creates table if it doesn't exist yet
-            SchemaUtils.create(BankClients, BankAccounts, Cards)
+            SchemaUtils.create(BankClients, BankAccountTypes, BankAccounts, CardTypes, Cards, Transactions)
         }
 
 

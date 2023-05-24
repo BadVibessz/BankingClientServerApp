@@ -1,8 +1,8 @@
 package mine.server.core.services
 
-import mine.server.entities.BankAccount
-import mine.server.entities.BankAccounts
-import mine.server.entities.Card
+import mine.models.CardModel
+import mine.server.entities.*
+import mine.types.AccountType
 import mine.types.CardType
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -12,7 +12,19 @@ class CardService {
 
     // todo: get, getall, create, update, delete
 
-    fun create(name: String, type: CardType, account: BankAccount): Boolean {
+
+    private fun getType(type: CardType) = when (type) {
+
+        CardType.Debit ->
+            transaction { mine.server.entities.CardType.all().find { it.name.lowercase() == "debit" } }
+
+        CardType.Credit ->
+            transaction { mine.server.entities.CardType.all().find { it.name.lowercase() == "credit" } }
+
+        else -> null
+    }
+
+    fun create(model: CardModel, account: BankAccount): Boolean {
 
         var success = true
         val defaultBalance = 1000f
@@ -20,22 +32,27 @@ class CardService {
         try {
             transaction {
 
-                if (Card.all().find { it.name == name } != null
-                    || BankAccount.all().find { it.id == account.id } == null) {
+                if (BankAccount.all().find { it.id == account.id } == null) {
+                    success = false
+                    close()
+                }
+
+                val typeColumn = getType(model.type)
+                if(typeColumn == null){
                     success = false
                     close()
                 }
 
                 Card.new {
-                    this.name = name
-                    this.type = type
+                    this.name = model.name
+                    this.type = typeColumn!!.id
                     this.account = account.id
-                    this.balance = defaultBalance // todo: ??
+                    this.balance = defaultBalance
                 }
 
                 // todo: is it correct?
                 val newBalance = account.balance + defaultBalance
-                BankAccounts.update({ BankAccounts.name eq account.name }) {
+                BankAccounts.update({ BankAccounts.id eq account.id }) {
                     it[balance] = newBalance
                 }
             }
@@ -51,7 +68,7 @@ class CardService {
 
         try {
             transaction {
-                BankAccounts.update {
+                Cards.update {
                     card.name = newName
                 }
             }
@@ -78,7 +95,7 @@ class CardService {
                 card.delete()
 
                 val newBalance = account.balance - cardBalance
-                BankAccounts.update({ BankAccounts.name eq account.name }) {
+                BankAccounts.update({ BankAccounts.id eq account.id }) {
                     it[balance] = newBalance
                 }
             }

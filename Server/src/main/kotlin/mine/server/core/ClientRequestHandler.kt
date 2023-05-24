@@ -2,21 +2,21 @@ package mine.server.core
 
 import com.google.gson.Gson
 import mine.Communicator
+import mine.models.*
 import mine.requests.Request
 import mine.responses.Response
 import mine.serializable.BankAccountSerializable
 import mine.serializable.CardSerializable
-import mine.server.core.services.BankAccountService
-import mine.server.core.services.CardService
-import mine.server.core.services.LoginService
-import mine.server.core.services.RegisterService
-import mine.server.entities.BankAccount
-import mine.server.entities.Card
+import mine.serializable.TransactionSerializable
+import mine.server.core.services.*
+import mine.server.entities.*
 import mine.statuses.StatusCode
 import mine.types.AccountType
 import mine.types.CardType
 import mine.types.ResponseType
+import mine.utils.JsonUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 
 object ClientRequestHandler {
 
@@ -27,7 +27,7 @@ object ClientRequestHandler {
         CardSerializable(
             card.name,
             card.account.value,
-            card.type,
+            card.type.value,
             card.balance
         )
 
@@ -38,14 +38,58 @@ object ClientRequestHandler {
         }.map { cardToCardSerializable(it) }
 
         return BankAccountSerializable(
-            account.name,
+            account.id.value,
+            account.firstOrder,
+            account.secondOrder,
+            account.currency,
+            account.checkDigit,
+            account.department,
+            account.type.value,
+            JsonUtils.gsonDateTime()!!.toJson(account.expiresAt),
             account.client.value,
-            account.type,
             account.balance,
             cardsSerializable
         )
     }
 
+    fun transactionToSerializable(transaction: Transaction): TransactionSerializable? {
+
+        val senderPhone = transaction {
+            BankClient.all()
+                .find { it.accounts.find { acc -> acc.id.value == transaction.account.value } != null }
+        }?.phoneNumber
+
+        val receiverPhone = transaction {
+            BankClient.all()
+                .find { it.accounts.find { acc -> acc.id.value == transaction.counterAgent.value } != null }
+        }?.phoneNumber
+
+
+        if (senderPhone == null || receiverPhone == null) return null
+
+        return TransactionSerializable(
+            senderPhone,
+            receiverPhone,
+            transaction.amount,
+            JsonUtils.gsonDateTime()!!.toJson(transaction.dateTime)
+        )
+
+    }
+
+
+    private fun handleUnauthorized(communicator: Communicator, request: Request) {
+
+        // unauthorized
+        val response = Response(
+            StatusCode.Unauthorized,
+            "You are not logged in!",
+            null,
+            request,
+            ResponseType.NoContent
+        )
+
+        communicator.send(_gson.toJson(response))
+    }
 
     fun handleRequest(json: String, client: ConnectedClient, communicator: Communicator) {
 
@@ -87,12 +131,18 @@ object ClientRequestHandler {
                     "register-command" -> {
 
                         val content = request.content!!
-                        val email = content["email"] as String
+
+                        val login = content["login"] as String
                         val password = content["password"] as String
+                        val firstName = content["firstName"] as String
+                        val secondName = content["secondName"] as String
+                        val lastName = content["lastName"] as String
+                        val phoneNumber = content["phoneNumber"] as String
 
                         request.content = null // hide pass and email
 
-                        val succeeded = service.register(email, password)
+                        val model = RegisterModel(login, password, firstName, secondName, lastName, phoneNumber)
+                        val succeeded = service.register(model)
 
                         val status = if (succeeded) StatusCode.OK else StatusCode.BadRequest
                         val message = if (succeeded) "You have successfully registered!" else "Something went wrong"
@@ -113,12 +163,13 @@ object ClientRequestHandler {
                     "login-command" -> {
 
                         val content = request.content!!
-                        val email = content["email"] as String
+                        val login = content["login"] as String
                         val password = content["password"] as String
 
                         request.content = null // hide pass and email
 
-                        val bankClient = service.login(email, password)
+                        val model = LoginModel(login, password)
+                        val bankClient = service.login(model)
 
                         val status: StatusCode
                         val message: String
@@ -131,7 +182,7 @@ object ClientRequestHandler {
 
                         } else {
                             status = StatusCode.BadRequest
-                            message = "Wrong email or password"
+                            message = "Wrong login or password"
                         }
 
                         val response = Response(status, message, null, request, ResponseType.NoContent)
@@ -148,27 +199,15 @@ object ClientRequestHandler {
                 val service = BankAccountService()
 
                 // unauthorized
-                if (client.bankClient == null) {
+                if (client.bankClient == null)
+                    handleUnauthorized(communicator, request)
 
-                    val response = Response(
-                        StatusCode.Unauthorized,
-                        "You are not logged in!",
-                        null,
-                        request,
-                        ResponseType.NoContent
-                    )
-
-                    communicator.send(_gson.toJson(response))
-                    return
-                }
 
 
                 when (request.command) {
 
                     "create-command" -> {
                         val content = request.content!!
-                        val name = content["name"] as String
-
 
                         // todo: do it better (serialize from json to actual AccountType enum)
                         val type = when ((content["type"] as String).lowercase()) {
@@ -193,7 +232,27 @@ object ClientRequestHandler {
                             return
                         }
 
-                        val succeeded = service.create(name, type, client.bankClient!!)
+                        val firstOrder = content["firstOrder"] as String
+                        val secondOrder = content["secondOrder"] as String
+                        val currency = (content["currency"] as Double).toInt()
+                        val checkDigit = (content["checkDigit"] as Double).toInt()
+                        val department = content["department"] as String
+                        val expiresAt = JsonUtils.gsonDateTime()!!.fromJson(
+                            content["expiresAt"].toString(),
+                            DateTime::class.java
+                        )
+
+                        val model = BankAccountModel(
+                            firstOrder,
+                            secondOrder,
+                            currency,
+                            checkDigit,
+                            department,
+                            type,
+                            expiresAt
+                        );
+
+                        val succeeded = service.create(model, client.bankClient!!)
 
                         val status = if (succeeded) StatusCode.OK else StatusCode.BadRequest
                         val message = if (succeeded) "You have successfully created account" else "Something went wrong"
@@ -222,12 +281,15 @@ object ClientRequestHandler {
                             return
                         }
 
-                        val newName = content["newName"] as String
+                        val newDate = JsonUtils.gsonDateTime()!!.fromJson(
+                            content["newDate"].toString(),
+                            DateTime::class.java
+                        )
 
                         var status: StatusCode
                         var message: String
                         try {
-                            service.update(account, newName)
+                            service.update(account, newDate)
 
                             val response = Response(
                                 StatusCode.OK,
@@ -333,19 +395,8 @@ object ClientRequestHandler {
             "card-service" -> {
                 val service = CardService()
 
-                if (client.bankClient == null) {
-
-                    val response = Response(
-                        StatusCode.Unauthorized,
-                        "You are not logged in!",
-                        null,
-                        request,
-                        ResponseType.NoContent
-                    )
-
-                    communicator.send(_gson.toJson(response))
-                    return
-                }
+                if (client.bankClient == null)
+                    handleUnauthorized(communicator, request)
 
 
                 when (request.command) {
@@ -393,7 +444,8 @@ object ClientRequestHandler {
                             return
                         }
 
-                        val succeeded = service.create(name, type, account)
+                        val model = CardModel(name, type)
+                        val succeeded = service.create(model, account)
 
                         val status = if (succeeded) StatusCode.OK else StatusCode.BadRequest
                         val message =
@@ -538,8 +590,86 @@ object ClientRequestHandler {
                 }
             }
 
+            "transaction-service" -> {
+
+                if (client.bankClient == null)
+                    handleUnauthorized(communicator, request)
+
+
+                val service = TransactionsService()
+                when (request.command) {
+
+                    "create-command" -> {
+
+                        val content = request.content
+
+                        val model = TransactionModel(
+                            (content!!["cardId"] as Double).toInt(),
+                            content["receiverPhone"] as String,
+                            (content["amount"] as Double).toFloat()
+                        )
+
+                        val succeeded = service.create(client.bankClient!!, model)
+
+                        val response: Response
+
+                        if (!succeeded)
+                            response = Response(
+                                StatusCode.BadRequest,
+                                "Something went wrong",
+                                null,
+                                request,
+                                ResponseType.NoContent
+                            )
+                        else response = Response(
+                            StatusCode.OK,
+                            "Transaction successful",
+                            null,
+                            request,
+                            ResponseType.NoContent
+                        )
+
+                        communicator.send(_gson.toJson(response))
+                    }
+
+                    "get-all-command" -> {
+
+                        // return all transaction associated with this client
+                        transaction {
+
+
+                            val transactions = mutableListOf<Transaction>()
+                            client.bankClient!!.accounts.forEach { acc ->
+                                transactions.addAll(Transaction.all()
+                                    .filter { it.account == acc.id || it.counterAgent == acc.id })
+                            }
+
+                            val transactionSerializable = mutableListOf<TransactionSerializable>()
+
+                            transactions.forEach {
+                                val serializable = transactionToSerializable(it)
+                                if (serializable != null) transactionSerializable.add(serializable)
+                            }
+
+                            val responseContent = mutableMapOf<String, Any>()
+                            responseContent["transactions"] = transactionSerializable
+
+                            val response = Response(
+                                StatusCode.OK,
+                                "There you go =)",
+                                responseContent,
+                                request,
+                                ResponseType.TransactionList
+                            )
+                            communicator.send(_gson.toJson(response))
+                        }
+
+                    }
+
+                }
+
+            }
+
         }
-
     }
-
 }

@@ -6,6 +6,6 @@ import java.io.Serializable
 data class CardSerializable(
     val name: String,
     val accountId: Int,
-    val type: CardType,
+    val typeId: Int,
     val balance: Float
 ) : Serializable

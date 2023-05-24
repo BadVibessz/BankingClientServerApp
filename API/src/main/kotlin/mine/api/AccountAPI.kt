@@ -5,9 +5,12 @@ import com.google.gson.Gson
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mine.Communicator
+import mine.models.BankAccountModel
 import mine.requests.Request
 import mine.statuses.StatusCode
 import mine.types.AccountType
+import mine.utils.JsonUtils
+import org.joda.time.DateTime
 import java.util.concurrent.CancellationException
 
 object AccountAPI {
@@ -15,16 +18,21 @@ object AccountAPI {
     //private val _gson =
 
     // TODO: DO NOT CREATE ACCOUNTS WITH WHITESPACES IN NAME
-    fun create(name: String, accountType: AccountType, callback: (String) -> Unit) {
+    fun create(model: BankAccountModel, callback: (String) -> Unit) {
 
-        // todo: form request and send it on server using communicator
+        // TODO: SERIALIZE MODEL AND DESERIALIZE IT ON SERVER
 
         val service = "account-service"
         val requestCommand = "create-command"
 
         val requestContent = mutableMapOf<String, Any>()
-        requestContent["name"] = name
-        requestContent["type"] = accountType
+        requestContent["firstOrder"] = model.firstOrder
+        requestContent["secondOrder"] = model.secondOrder
+        requestContent["checkDigit"] = model.checkDigit
+        requestContent["currency"] = model.currency
+        requestContent["type"] = model.type
+        requestContent["department"] = model.department
+        requestContent["expiresAt"] = JsonUtils.gsonDateTime()!!.toJson(model.expiresAt)
 
         val request = Request(service, requestCommand, requestContent)
 
@@ -32,19 +40,18 @@ object AccountAPI {
         callback(json)
     }
 
-    fun update(id: Int, newName: String, callback: (String) -> Unit) {
+    fun update(id: Int, newDate: DateTime, callback: (String) -> Unit) {
         val service = "account-service"
         val requestCommand = "update-command"
 
         val requestContent = mutableMapOf<String, Any>()
         requestContent["id"] = id
-        requestContent["newName"] = newName
+        requestContent["newDate"] = JsonUtils.gsonDateTime()!!.toJson(newDate)
 
         val request = Request(service, requestCommand, requestContent)
 
         val json = Gson().toJson(request)
         callback(json)
-
     }
 
     fun delete(id: Int, callback: (String) -> Unit) {
@@ -66,6 +73,19 @@ object AccountAPI {
 
         val requestContent = mutableMapOf<String, Any>()
         requestContent["id"] = id
+
+        val request = Request(service, requestCommand, requestContent)
+
+        val json = Gson().toJson(request)
+        callback(json)
+    }
+
+    fun get(number: String, callback: (String) -> Unit) {
+        val service = "account-service"
+        val requestCommand = "get-command-by-number"
+
+        val requestContent = mutableMapOf<String, Any>()
+        requestContent["number"] = number
 
         val request = Request(service, requestCommand, requestContent)
 

@@ -25,9 +25,10 @@ class Server(val port: Int = 5004) {
                     }
                     // todo: handle new clients
                 }
-            } catch (_: Throwable) {
+            } catch (e: Throwable) {
                 // todo: handle error
-                println("Something went wrong on server")
+                println(e.message)
+                stop()
             }
         }
     }

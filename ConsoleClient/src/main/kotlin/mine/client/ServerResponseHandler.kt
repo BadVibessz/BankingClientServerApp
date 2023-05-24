@@ -5,20 +5,26 @@ import mine.cryptography.asymmetric.RSA
 import mine.responses.Response
 import mine.serializable.BankAccountSerializable
 import mine.serializable.CardSerializable
+import mine.serializable.TransactionSerializable
 import mine.types.ResponseType
-import java.security.PublicKey
 
 object ServerResponseHandler {
 
     private val _gson = Gson()
 
     fun handleRespone(json: String, client: Client) {
+
+        if (client.ui == null) return
+
         val response = _gson.fromJson(json, Response::class.java)
 
         val status = response.status
         val message = response.message
         val content = response.content
         val request = response.request
+
+
+        client.ui.showMessage(message)
 
         when (response.type) {
 
@@ -37,6 +43,8 @@ object ServerResponseHandler {
                     BankAccountSerializable::class.java
                 )
 
+                client.ui.showAccount(account)
+
                 // todo: ??
             }
 
@@ -45,6 +53,8 @@ object ServerResponseHandler {
                     content!!["accounts"].toString(),
                     Array<BankAccountSerializable>::class.java
                 ).toList()
+
+                client.ui.updateAccountsList(accounts)
 
                 // todo: update client's account list
             }
@@ -55,6 +65,8 @@ object ServerResponseHandler {
                     CardSerializable::class.java
                 )
 
+                client.ui.showCard(card)
+
                 // todo: ??
             }
 
@@ -64,15 +76,29 @@ object ServerResponseHandler {
                     Array<CardSerializable>::class.java
                 ).toList()
 
-                // todo: update client's card list
+                client.ui.updateCardsList(cards)
             }
 
+            ResponseType.TransactionList -> {
+                val transactions = _gson.fromJson(
+                    content!!["transactions"].toString(),
+                    Array<TransactionSerializable>::class.java
+                ).toList()
+
+                client.ui.updateTransactionsList(transactions)
+            }
+
+
             else -> {
+
+                when (request.command) {
+                    "register-command" -> client.ui.showAlert(message)
+                    "login-command" -> client.ui.onSuccessfulLogin()
+                }
 
             }
         }
 
-        println(message)
     }
 
 }

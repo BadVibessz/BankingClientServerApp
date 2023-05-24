@@ -1,17 +1,34 @@
 package mine.server.core.services
 
+import mine.models.BankAccountModel
 import mine.server.entities.BankAccount
+import mine.server.entities.BankAccountType
 import mine.server.entities.BankAccounts
 import mine.server.entities.BankClient
 import mine.types.AccountType
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
+import org.joda.time.DateTime
 
 class BankAccountService { // todo: implement as Scoped https://metanit.com/sharp/aspnet5/6.2.php
 
     // todo: get, getall, create, update, delete
 
-    fun create(name: String, type: AccountType, client: BankClient): Boolean {
+    private fun getType(type: AccountType) = when (type) {
+
+        AccountType.Saving ->
+            transaction { BankAccountType.all().find { it.name.lowercase() == "saving" } }
+
+        AccountType.Checking ->
+            transaction { BankAccountType.all().find { it.name.lowercase() == "checking" } }
+
+        AccountType.Credit ->
+            transaction { BankAccountType.all().find { it.name.lowercase() == "credit" } }
+
+        else -> null
+    }
+
+    fun create(model: BankAccountModel, client: BankClient): Boolean {
 
         var success = true
         try {
@@ -23,9 +40,20 @@ class BankAccountService { // todo: implement as Scoped https://metanit.com/shar
 //                } // todo: badRequest
 
 
+                val typeColumn = getType(model.type)
+                if(typeColumn == null){
+                    success = false
+                    close()
+                }
+
                 BankAccount.new {
-                    this.name = name
-                    this.type = type
+                    this.type = typeColumn!!.id
+                    this.firstOrder = model.firstOrder
+                    this.secondOrder = model.secondOrder
+                    this.currency = model.currency
+                    this.checkDigit = model.checkDigit
+                    this.department = model.department
+                    this.expiresAt = model.expiresAt // todo: ??
                     this.client = client.id
                     this.balance = 0F // todo: ??
                 }
@@ -43,9 +71,9 @@ class BankAccountService { // todo: implement as Scoped https://metanit.com/shar
     fun get(id: Int) = transaction { BankAccount.all().find { it.id.value == id } }
     fun getAll() = transaction { BankAccount.all().toList() }
 
-    fun update(account: BankAccount, newName: String) = transaction {
+    fun update(account: BankAccount, newDate: DateTime) = transaction {
         BankAccounts.update {
-            account.name = newName
+            account.expiresAt = newDate
         }
     }
 
