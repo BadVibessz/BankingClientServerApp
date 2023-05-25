@@ -5,6 +5,7 @@ enum class ResponseType {
     SingleCard,
     CardList,
     SingleAccount,
+    AccountId,
     AccountList,
     TransactionList,
     NoContent, // ничего не возвращает

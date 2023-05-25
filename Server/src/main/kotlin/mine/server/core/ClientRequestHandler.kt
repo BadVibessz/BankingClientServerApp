@@ -370,6 +370,34 @@ object ClientRequestHandler {
                         return
                     }
 
+                    "get-by-number-command" -> {
+
+                        val content = request.content!!
+
+                        val account = service.get(content["number"] as String)
+
+                        // client cannot get account he doesn't own
+                        if (account == null || account.client.value != client.bankClient!!.id.value) {
+
+                            val response = Response(
+                                StatusCode.NotFound,
+                                "There's no such account", null, request, ResponseType.NoContent
+                            )
+                            communicator.send(_gson.toJson(response))
+                            return
+                        }
+
+                        val responseContent = mutableMapOf<String, Any>()
+                        responseContent["id"] = account.id.value
+
+                        val response = Response(
+                            StatusCode.OK,
+                            "There you go =)", responseContent, request,
+                            ResponseType.AccountId
+                        )
+                        communicator.send(_gson.toJson(response))
+                    }
+
                     // return not all accounts but all accounts associated with this client
                     "get-all-command" -> {
 

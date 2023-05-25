@@ -15,6 +15,7 @@ import java.awt.*
 import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.GroupLayout
+import javax.swing.JButton
 import javax.swing.JPanel
 import javax.swing.JScrollPane
 import javax.swing.SwingConstants
@@ -76,6 +77,8 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
         setupEventListeners()
 
         isVisible = true
+
+        clickButton(_bankAccountsButton)
     }
 
     private fun setupLayout() {
@@ -130,6 +133,10 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
         }
     }
 
+
+    private fun clickButton(button: FlatButton){
+        button.doClick()
+    }
 
     private fun pressButton(button: FlatButton) {
 
@@ -205,15 +212,10 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
 
         _contentPanel.layout = FlowLayout(0, 20, 20)
 
-        _contentPanel.add(AddCardThumbnail{
-
-//            val model = CardModel(
-//
-//            )
-//            gui.createCard(model)
-//            gui.getAllAccounts()
-
-            CreateCardWindow(gui)
+        _contentPanel.add(AddCardThumbnail {
+            CreateCardWindow(gui, {
+                clickButton(_cardsButton)
+            })
 
         })
 
@@ -232,6 +234,11 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
         clearLayout(_contentPanel)
 
         _contentPanel.layout = BoxLayout(_contentPanel, BoxLayout.Y_AXIS)
+        _contentPanel.add(AddTransactionThumbnail{
+            TransferWindow()
+
+        })
+
         thumbnails.forEach { _contentPanel.add(it) }
 
         _contentPanel.validate()

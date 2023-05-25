@@ -80,6 +80,10 @@ class ConsoleUI(sendCallback: (String) -> Unit) : UI(sendCallback) {
         println(msg)
     }
 
+    override fun updateAccountCallback(account: BankAccountSerializable, callback: (BankAccountSerializable) -> Unit) {
+        TODO("Not yet implemented")
+    }
+
     override fun showAccount(account: BankAccountSerializable) {
 
         val accountString = formAccountString(account)
@@ -106,6 +110,7 @@ class ConsoleUI(sendCallback: (String) -> Unit) : UI(sendCallback) {
     override fun updateTransactionsList(transactions: List<TransactionSerializable>) {
         TODO("Not yet implemented")
     }
+
 
     override fun onSuccessfulLogin() {
         // todo:

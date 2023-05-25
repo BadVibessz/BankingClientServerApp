@@ -82,7 +82,7 @@ object AccountAPI {
 
     fun get(number: String, callback: (String) -> Unit) {
         val service = "account-service"
-        val requestCommand = "get-command-by-number"
+        val requestCommand = "get-by-number-command"
 
         val requestContent = mutableMapOf<String, Any>()
         requestContent["number"] = number

@@ -13,6 +13,12 @@ class GUI(sendCallback: (String) -> Unit) : UI(sendCallback) {
     var mainWindow: MainWindow? = null
     var loginWindow: LoginWindow? = null
     var registerWindow: RegisterWindow? = null
+    override fun updateAccountCallback(
+        account: BankAccountSerializable,
+        callback: (BankAccountSerializable) -> Unit
+    ) =
+        callback(account)
+
 
     override fun onSuccessfulLogin() {
         loginWindow?.dispose()

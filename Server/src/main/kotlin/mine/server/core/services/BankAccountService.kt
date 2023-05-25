@@ -9,10 +9,31 @@ import mine.types.AccountType
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
+import java.lang.StringBuilder
 
 class BankAccountService { // todo: implement as Scoped https://metanit.com/sharp/aspnet5/6.2.php
 
     // todo: get, getall, create, update, delete
+
+    private fun getIdWithLeadingZeros(id: Int): String {
+
+        val leadingZeros = 7 - id.toString().length
+
+        if (leadingZeros <= 0) return id.toString()
+
+        val builder = StringBuilder()
+
+        repeat(leadingZeros, { builder.append('0') })
+        builder.append(id)
+
+        return builder.toString()
+    }
+
+    private fun formAccountNumber(account: BankAccount) =
+        account.firstOrder + account.secondOrder +
+                account.currency + account.checkDigit +
+                account.department + getIdWithLeadingZeros(account.id.value)
+
 
     private fun getType(type: AccountType) = when (type) {
 
@@ -41,7 +62,7 @@ class BankAccountService { // todo: implement as Scoped https://metanit.com/shar
 
 
                 val typeColumn = getType(model.type)
-                if(typeColumn == null){
+                if (typeColumn == null) {
                     success = false
                     close()
                 }
@@ -69,6 +90,9 @@ class BankAccountService { // todo: implement as Scoped https://metanit.com/shar
     }
 
     fun get(id: Int) = transaction { BankAccount.all().find { it.id.value == id } }
+    fun get(number: String) = transaction { BankAccount.all().find { formAccountNumber(it) == number } }
+
+
     fun getAll() = transaction { BankAccount.all().toList() }
 
     fun update(account: BankAccount, newDate: DateTime) = transaction {

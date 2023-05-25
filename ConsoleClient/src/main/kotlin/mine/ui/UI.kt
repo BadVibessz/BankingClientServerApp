@@ -19,6 +19,7 @@ abstract class UI(private val sendCallback: (String) -> Unit) {
     fun createAccount(model: BankAccountModel) = AccountAPI.create(model, sendCallback)
     fun updateAccount(id: Int, newDate: DateTime) = AccountAPI.update(id, newDate, sendCallback)
     fun getAccount(id: Int) = AccountAPI.get(id, sendCallback)
+    fun getAccountId(number: String) = AccountAPI.get(number, sendCallback)
     fun getAllAccounts() = AccountAPI.getAll(sendCallback)
     fun deleteAccount(id: Int) = AccountAPI.delete(id, sendCallback)
 
@@ -39,6 +40,8 @@ abstract class UI(private val sendCallback: (String) -> Unit) {
     abstract fun requestLogin()
     abstract fun showAlert(msg: String)
     abstract fun showMessage(msg: String)
+
+    abstract fun updateAccountCallback(account: BankAccountSerializable, callback: (BankAccountSerializable) -> Unit)
 
     abstract fun showAccount(account: BankAccountSerializable)
     abstract fun showCard(card: CardSerializable)

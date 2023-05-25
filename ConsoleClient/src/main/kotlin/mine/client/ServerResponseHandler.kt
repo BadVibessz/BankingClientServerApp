@@ -12,6 +12,8 @@ object ServerResponseHandler {
 
     private val _gson = Gson()
 
+    var getAccountIdCallback: ((Int) -> Unit)? = null
+
     fun handleRespone(json: String, client: Client) {
 
         if (client.ui == null) return
@@ -87,6 +89,9 @@ object ServerResponseHandler {
 
                 client.ui.updateTransactionsList(transactions)
             }
+
+            ResponseType.AccountId ->
+                getAccountIdCallback?.let { it((content!!["id"] as Double).toInt()) }
 
 
             else -> {

@@ -5,15 +5,10 @@ import mine.client.windows.abstractions.MyWindow
 import mine.client.windows.utils.FlatButton
 import mine.models.CardModel
 import mine.types.CardType
-import mine.ui.GUI
 import java.awt.Dimension
-import javax.swing.GroupLayout
-import javax.swing.JComboBox
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.JTextField
+import javax.swing.*
 
-class CreateCardWindow(gui: GUI, val repaintCallback: () -> Unit) : MyWindow(gui) {
+class TransferWindow : JFrame() {
 
     private val _minSize = Dimension(200, 300)
     private val _startSize = Dimension(170, 150)
@@ -50,18 +45,7 @@ class CreateCardWindow(gui: GUI, val repaintCallback: () -> Unit) : MyWindow(gui
     private fun setupEventListeners() {
 
         _submitButton.addActionListener {
-            ServerResponseHandler.getAccountIdCallback = {
 
-                val model = CardModel(
-                    _nameTextField.text,
-                    _typeComboBox.selectedItem as CardType
-                )
-                gui.createCard(model, it)
-            }
-
-            gui.getAccountId(_accountNumberTextField.text)
-            gui.getAllCards()
-            repaintCallback()
         }
 
     }
@@ -95,12 +79,12 @@ class CreateCardWindow(gui: GUI, val repaintCallback: () -> Unit) : MyWindow(gui
                     .addGap(10)
                     .addGroup(
                         createParallelGroup()
-                            .addComponent(_nameLabel, SHRINK, 150, GROW)
-                            .addComponent(_nameTextField, SHRINK, 150, GROW)
-                            .addComponent(_typeLabel, SHRINK, 150, GROW)
-                            .addComponent(_typeComboBox, SHRINK, 150, GROW)
-                            .addComponent(_accountNumberLabel, SHRINK, 150, GROW)
-                            .addComponent(_accountNumberTextField, SHRINK, 150, GROW)
+                            .addComponent(_nameLabel, MyWindow.SHRINK, 150, MyWindow.GROW)
+                            .addComponent(_nameTextField, MyWindow.SHRINK, 150, MyWindow.GROW)
+                            .addComponent(_typeLabel, MyWindow.SHRINK, 150, MyWindow.GROW)
+                            .addComponent(_typeComboBox, MyWindow.SHRINK, 150, MyWindow.GROW)
+                            .addComponent(_accountNumberLabel, MyWindow.SHRINK, 150, MyWindow.GROW)
+                            .addComponent(_accountNumberTextField, MyWindow.SHRINK, 150, MyWindow.GROW)
                             .addComponent(_submitButton, 100, 100, 100)
                     )
                     .addGap(10)
