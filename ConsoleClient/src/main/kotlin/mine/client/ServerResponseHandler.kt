@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import mine.cryptography.asymmetric.RSA
 import mine.responses.Response
 import mine.serializable.BankAccountSerializable
+import mine.serializable.BankClientSerializable
 import mine.serializable.CardSerializable
 import mine.serializable.TransactionSerializable
 import mine.types.ResponseType
@@ -68,8 +69,6 @@ object ServerResponseHandler {
                 )
 
                 client.ui.showCard(card)
-
-                // todo: ??
             }
 
             ResponseType.CardList -> {
@@ -92,6 +91,15 @@ object ServerResponseHandler {
 
             ResponseType.AccountId ->
                 getAccountIdCallback?.let { it((content!!["id"] as Double).toInt()) }
+
+            ResponseType.BankClientInfo -> {
+                val bankClient = _gson.fromJson(
+                    content!!["client"].toString(),
+                    BankClientSerializable::class.java
+                )
+
+                client.ui.updateProfileInfo(bankClient)
+            }
 
 
             else -> {

@@ -8,7 +8,7 @@ import mine.ui.GUI
 import java.awt.Dimension
 import javax.swing.*
 
-class RegisterWindow(gui: GUI) : MyWindow(gui) {
+class RegisterWindow(gui: GUI) : MyWindow(gui,1) {
 
     private val _loginLabel = JLabel("Login")
     private val _passwordLabel = JLabel("Password")

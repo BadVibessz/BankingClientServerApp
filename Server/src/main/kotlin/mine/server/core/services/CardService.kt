@@ -10,9 +10,6 @@ import java.lang.Exception
 
 class CardService {
 
-    // todo: get, getall, create, update, delete
-
-
     private fun getType(type: CardType) = when (type) {
 
         CardType.Debit ->

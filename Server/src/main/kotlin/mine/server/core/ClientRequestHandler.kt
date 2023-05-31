@@ -6,6 +6,7 @@ import mine.models.*
 import mine.requests.Request
 import mine.responses.Response
 import mine.serializable.BankAccountSerializable
+import mine.serializable.BankClientSerializable
 import mine.serializable.CardSerializable
 import mine.serializable.TransactionSerializable
 import mine.server.core.services.*
@@ -25,6 +26,7 @@ object ClientRequestHandler {
 
     private fun cardToCardSerializable(card: Card) =
         CardSerializable(
+            card.id.value,
             card.name,
             card.account.value,
             card.type.value,
@@ -75,6 +77,15 @@ object ClientRequestHandler {
         )
 
     }
+
+    fun bankClientToSerializable(client: BankClient): BankClientSerializable = BankClientSerializable(
+        client.id.value,
+        client.login,
+        client.firstName,
+        client.secondName,
+        client.lastName,
+        client.phoneNumber
+    )
 
 
     private fun handleUnauthorized(communicator: Communicator, request: Request) {
@@ -620,8 +631,10 @@ object ClientRequestHandler {
 
             "transaction-service" -> {
 
-                if (client.bankClient == null)
+                if (client.bankClient == null) {
                     handleUnauthorized(communicator, request)
+                    return
+                }
 
 
                 val service = TransactionsService()
@@ -695,6 +708,39 @@ object ClientRequestHandler {
                     }
 
                 }
+
+            }
+
+            "client-service" -> {
+
+                if (client.bankClient == null) {
+                    handleUnauthorized(communicator, request)
+                    return
+                }
+
+                when (request.command) {
+
+                    "get-command" -> {
+
+                        transaction {
+
+                            val responseContent = mutableMapOf<String, Any>()
+                            responseContent["client"] = bankClientToSerializable(client.bankClient!!)
+
+                            val response = Response(
+                                StatusCode.OK,
+                                "There you go =)",
+                                responseContent,
+                                request,
+                                ResponseType.BankClientInfo
+                            )
+                            communicator.send(_gson.toJson(response))
+                        }
+
+                    }
+
+                }
+
 
             }
 

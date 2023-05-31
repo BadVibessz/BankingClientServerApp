@@ -6,6 +6,7 @@ import mine.client.windows.utils.thumbnails.*
 import mine.models.BankAccountModel
 import mine.models.CardModel
 import mine.serializable.BankAccountSerializable
+import mine.serializable.BankClientSerializable
 import mine.serializable.CardSerializable
 import mine.serializable.TransactionSerializable
 import mine.types.AccountType
@@ -16,11 +17,12 @@ import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.GroupLayout
 import javax.swing.JButton
+import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JScrollPane
 import javax.swing.SwingConstants
 
-class MainWindow(gui: GUI) : MyWindow(gui) {
+class MainWindow(gui: GUI) : MyWindow(gui, 1) {
 
     private val _minSize = Dimension(200, 100)
     private val _startSize = Dimension(800, 600)
@@ -28,7 +30,12 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
     // panels
     private val _wrapperPanel = JPanel().apply { background = Color.LIGHT_GRAY }
     private val _controlPanel = JPanel().apply { background = Color.white }
-    private val _contentPanel = JPanel().apply { background = Color.LIGHT_GRAY }
+    private val _contentPanel = JPanel().apply {
+        background = Color.LIGHT_GRAY
+        //minimumSize = Dimension(500,500)
+        //preferredSize = Dimension(500,500)
+        //maximumSize = Dimension(1000,1000)
+    }
 
     // scrolls
     private val _scroll = JScrollPane(_contentPanel)
@@ -43,12 +50,14 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
         background = _buttonColor
         horizontalAlignment = SwingConstants.LEFT
         isBorderPainted = false
+        isContentAreaFilled = true
     }
 
     private val _bankAccountsButton = FlatButton("Bank Accounts").apply {
         background = _buttonColor
         horizontalAlignment = SwingConstants.LEFT
         isBorderPainted = false
+        isContentAreaFilled = true
 
     }
 
@@ -56,16 +65,15 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
         background = _buttonColor
         horizontalAlignment = SwingConstants.LEFT
         isBorderPainted = false
-
+        isContentAreaFilled = true
     }
 
     private val _transactionsButton = FlatButton("Transactions").apply {
         background = _buttonColor
         horizontalAlignment = SwingConstants.LEFT
         isBorderPainted = false
-
+        isContentAreaFilled = true
     }
-
 
     init {
         minimumSize = _minSize
@@ -78,7 +86,7 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
 
         isVisible = true
 
-        clickButton(_bankAccountsButton)
+        clickButton(_profileButton)
     }
 
     private fun setupLayout() {
@@ -109,6 +117,7 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
     }
 
     private fun setupControlPanelLayout() {
+
         _controlPanel.layout = GroupLayout(_controlPanel).apply {
             setVerticalGroup(
                 createSequentialGroup()
@@ -120,7 +129,7 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
                     .addComponent(_cardsButton, 50, 50, 50)
                     .addGap(1)
                     .addComponent(_transactionsButton, 50, 50, 50)
-                    .addGap(Int.MAX_VALUE, Int.MAX_VALUE, Int.MAX_VALUE)
+                    .addGap(0, 0, Int.MAX_VALUE)
             )
 
             setHorizontalGroup(
@@ -134,13 +143,12 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
     }
 
 
-    private fun clickButton(button: FlatButton){
+    private fun clickButton(button: FlatButton) {
         button.doClick()
     }
 
     private fun pressButton(button: FlatButton) {
 
-        // todo: implement as list?
         unpressButton(_bankAccountsButton)
         unpressButton(_cardsButton)
         unpressButton(_profileButton)
@@ -154,6 +162,11 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
     }
 
     private fun setupEventListeners() {
+
+        _profileButton.addActionListener {
+            pressButton(_profileButton)
+            gui.getClientInfo()
+        }
 
         _bankAccountsButton.addActionListener {
             pressButton(_bankAccountsButton)
@@ -177,10 +190,42 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
             panel.remove(component)
     }
 
+    // todo:
+    fun updateProfileInfo(bankClient: BankClientSerializable) {
+
+        clearLayout(_contentPanel)
+
+        _contentPanel.background = Color.white
+
+        class CenteredLabel(text: String) : JLabel(text, CENTER) {
+            init {
+                alignmentX = CENTER_ALIGNMENT
+            }
+        }
+
+        val labels = listOf (
+            CenteredLabel("Id: ${bankClient.id}"),
+            CenteredLabel("Login: ${bankClient.login}"),
+            CenteredLabel("First name: ${bankClient.firstName}"),
+            CenteredLabel("Second name: ${bankClient.secondName}"),
+            CenteredLabel("Last name: ${bankClient.lastName}"),
+            CenteredLabel("Phone number: ${bankClient.phoneNumber}")
+        )
+
+        _contentPanel.layout = BoxLayout(_contentPanel, BoxLayout.Y_AXIS)
+
+        labels.forEach { _contentPanel.add(it) }
+
+        _contentPanel.revalidate()
+        _contentPanel.repaint()
+    }
+
     fun updateAccountThumbnails(accounts: List<BankAccountSerializable>) {
         val thumbnails = accounts.map { BankAccountThumbnail(it) }
 
         clearLayout(_contentPanel)
+
+        _contentPanel.background = Color.LIGHT_GRAY
 
         _contentPanel.layout = FlowLayout(0, 20, 20)
 
@@ -201,7 +246,7 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
 
         thumbnails.forEach { _contentPanel.add(it) }
 
-        _contentPanel.validate()
+        _contentPanel.revalidate()
         _contentPanel.repaint()
     }
 
@@ -209,6 +254,8 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
         val thumbnails = cards.map { CardThumbnail(it) }
 
         clearLayout(_contentPanel)
+
+        _contentPanel.background = Color.LIGHT_GRAY
 
         _contentPanel.layout = FlowLayout(0, 20, 20)
 
@@ -221,7 +268,7 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
 
         thumbnails.forEach { _contentPanel.add(it) }
 
-        _contentPanel.validate()
+        _contentPanel.revalidate()
         _contentPanel.repaint()
 
     }
@@ -233,17 +280,17 @@ class MainWindow(gui: GUI) : MyWindow(gui) {
 
         clearLayout(_contentPanel)
 
-        _contentPanel.layout = BoxLayout(_contentPanel, BoxLayout.Y_AXIS)
-        _contentPanel.add(AddTransactionThumbnail{
-            TransferWindow()
+        _contentPanel.background = Color.LIGHT_GRAY
 
+
+        _contentPanel.layout = BoxLayout(_contentPanel, BoxLayout.Y_AXIS)
+        _contentPanel.add(AddTransactionThumbnail {
+            TransferWindow(this.gui, { clickButton(_transactionsButton) })
         })
 
         thumbnails.forEach { _contentPanel.add(it) }
 
-        _contentPanel.validate()
+        _contentPanel.revalidate()
         _contentPanel.repaint()
     }
-
-
 }

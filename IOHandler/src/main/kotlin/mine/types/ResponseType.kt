@@ -8,5 +8,6 @@ enum class ResponseType {
     AccountId,
     AccountList,
     TransactionList,
+    BankClientInfo,
     NoContent, // ничего не возвращает
 }

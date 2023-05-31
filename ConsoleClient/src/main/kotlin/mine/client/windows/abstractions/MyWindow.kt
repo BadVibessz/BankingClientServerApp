@@ -7,7 +7,7 @@ import javax.swing.GroupLayout
 import javax.swing.JFrame
 import javax.swing.JOptionPane
 
-abstract class MyWindow(protected val gui: GUI) : JFrame() {
+abstract class MyWindow(protected val gui: GUI, closingType: Int) : JFrame() {
 
     companion object {
         val SHRINK = GroupLayout.PREFERRED_SIZE
@@ -24,10 +24,16 @@ abstract class MyWindow(protected val gui: GUI) : JFrame() {
                         JOptionPane.QUESTION_MESSAGE
                     ) == JOptionPane.YES_OPTION
                 ) {
-                    System.exit(0) // todo: client.stop()?
+
+                    when (closingType) {
+                        1 -> System.exit(0)
+                        2 -> dispose()
+                    }
+                } else {
+                    return
                 }
             }
         })
-        pack()
+        //pack()
     }
 }

@@ -13,7 +13,7 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
 
-class CreateCardWindow(gui: GUI, val repaintCallback: () -> Unit) : MyWindow(gui) {
+class CreateCardWindow(gui: GUI, val repaintCallback: () -> Unit) : MyWindow(gui, 2) {
 
     private val _minSize = Dimension(200, 300)
     private val _startSize = Dimension(170, 150)
@@ -50,6 +50,7 @@ class CreateCardWindow(gui: GUI, val repaintCallback: () -> Unit) : MyWindow(gui
     private fun setupEventListeners() {
 
         _submitButton.addActionListener {
+
             ServerResponseHandler.getAccountIdCallback = {
 
                 val model = CardModel(
@@ -62,6 +63,7 @@ class CreateCardWindow(gui: GUI, val repaintCallback: () -> Unit) : MyWindow(gui
             gui.getAccountId(_accountNumberTextField.text)
             gui.getAllCards()
             repaintCallback()
+            this.dispose()
         }
 
     }

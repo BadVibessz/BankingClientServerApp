@@ -2,6 +2,7 @@ package mine.ui
 
 import com.google.gson.Gson
 import mine.serializable.BankAccountSerializable
+import mine.serializable.BankClientSerializable
 import mine.serializable.CardSerializable
 import mine.serializable.TransactionSerializable
 import java.lang.StringBuilder
@@ -108,6 +109,10 @@ class ConsoleUI(sendCallback: (String) -> Unit) : UI(sendCallback) {
     }
 
     override fun updateTransactionsList(transactions: List<TransactionSerializable>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateProfileInfo(bankClient: BankClientSerializable) {
         TODO("Not yet implemented")
     }
 

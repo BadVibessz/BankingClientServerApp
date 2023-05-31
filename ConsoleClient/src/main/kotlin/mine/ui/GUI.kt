@@ -4,6 +4,7 @@ import mine.client.windows.MainWindow
 import mine.client.windows.LoginWindow
 import mine.client.windows.RegisterWindow
 import mine.serializable.BankAccountSerializable
+import mine.serializable.BankClientSerializable
 import mine.serializable.CardSerializable
 import mine.serializable.TransactionSerializable
 
@@ -69,5 +70,9 @@ class GUI(sendCallback: (String) -> Unit) : UI(sendCallback) {
 
     override fun updateTransactionsList(transactions: List<TransactionSerializable>) {
         mainWindow?.updateTransactionThumbnails(transactions)
+    }
+
+    override fun updateProfileInfo(bankClient: BankClientSerializable) {
+        mainWindow?.updateProfileInfo(bankClient)
     }
 }

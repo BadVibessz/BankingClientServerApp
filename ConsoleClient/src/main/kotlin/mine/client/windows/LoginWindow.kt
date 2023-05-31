@@ -9,7 +9,7 @@ import java.awt.Dimension
 import javax.swing.*
 import javax.swing.JOptionPane.showMessageDialog
 
-class LoginWindow(gui: GUI) : MyWindow(gui) {
+class LoginWindow(gui: GUI) : MyWindow(gui, 1) {
 
     private val _loginLabel = JLabel("Login")
     private val _passwordLabel = JLabel("Password")

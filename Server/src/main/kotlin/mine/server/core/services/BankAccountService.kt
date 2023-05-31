@@ -13,7 +13,6 @@ import java.lang.StringBuilder
 
 class BankAccountService { // todo: implement as Scoped https://metanit.com/sharp/aspnet5/6.2.php
 
-    // todo: get, getall, create, update, delete
 
     private fun getIdWithLeadingZeros(id: Int): String {
 

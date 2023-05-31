@@ -25,15 +25,6 @@ class RegisterService {
                 return@transaction
             }
 
-//            BankClients.insert {
-//                it[login] = model.login
-//                it[password] = model.password
-//                it[firstName] = model.firstName
-//                it[secondName] = model.secondName
-//                it[lastName] = model.lastName
-//                it[phoneNumber] = model.phoneNumber
-//            }
-
             BankClient.new {
                 this.login = model.login
                 this.password = model.password

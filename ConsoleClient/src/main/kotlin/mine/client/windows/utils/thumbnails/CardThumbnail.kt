@@ -10,7 +10,8 @@ class CardThumbnail(val card: CardSerializable) : Thumbnail(){
         super.paintComponent(g)
 
         // todo
-        g?.drawString(card.name, 10, 20)
-        g?.drawString("Balance: ${card.balance}", 10, 40)
+        g?.drawString("Id: ${card.id}", 10, 20)
+        g?.drawString("Name: ${card.name}", 10, 40)
+        g?.drawString("Balance: ${card.balance}", 10, 60)
     }
 }
