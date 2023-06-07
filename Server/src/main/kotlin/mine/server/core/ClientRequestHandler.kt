@@ -141,7 +141,7 @@ object ClientRequestHandler {
                 when (request.command) {
                     "register-command" -> {
 
-                        val content = request.content!!
+                        val content = request.content
 
                         val login = content["login"] as String
                         val password = content["password"] as String
@@ -150,7 +150,7 @@ object ClientRequestHandler {
                         val lastName = content["lastName"] as String
                         val phoneNumber = content["phoneNumber"] as String
 
-                        request.content = null // hide pass and email
+                        request.content.clear() // hide pass and email
 
                         val model = RegisterModel(login, password, firstName, secondName, lastName, phoneNumber)
                         val succeeded = service.register(model)
@@ -173,11 +173,11 @@ object ClientRequestHandler {
                 when (request.command) {
                     "login-command" -> {
 
-                        val content = request.content!!
+                        val content = request.content
                         val login = content["login"] as String
                         val password = content["password"] as String
 
-                        request.content = null // hide pass and email
+                        request.content.clear() // hide pass and email
 
                         val model = LoginModel(login, password)
                         val bankClient = service.login(model)

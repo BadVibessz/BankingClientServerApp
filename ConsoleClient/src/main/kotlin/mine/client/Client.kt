@@ -52,8 +52,8 @@ class Client(
             if (isActive) {
 
 
-                //ui?.requestLogin()
-                ui?.login(LoginModel("admin", "admin"))
+                ui?.requestLogin()
+                //ui?.login(LoginModel("admin", "admin"))
 
 //                ui?.createAccount(
 //                    BankAccountModel(

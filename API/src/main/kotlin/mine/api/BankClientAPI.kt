@@ -11,7 +11,7 @@ object BankClientAPI {
         val service = "client-service"
         val requestCommand = "get-command"
 
-        val request = Request(service, requestCommand, null)
+        val request = Request(service, requestCommand)
         val json = Gson().toJson(request)
         callback(json)
     }
